@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Listing(models.Model):
@@ -16,8 +17,8 @@ class Listing(models.Model):
 
 class Booking(models.Model):
     """Represents a booking for a listing by a user."""
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='bookings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
     check_in = models.DateField()
     check_out = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -28,9 +29,9 @@ class Booking(models.Model):
 
 class Review(models.Model):
     """User review for a listing."""
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField()
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
